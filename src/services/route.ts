@@ -58,3 +58,30 @@ export function currentRoutePosition(route: Route, coordinate: Coordinate, thres
   const snapped = snapToRoute(route, coordinate);
   return snapped.offsetMeters <= threshold ? snapped : null;
 }
+
+/** Select by cumulative distance, never interpolate across track segment gaps. */
+export function positionAtDistance(route: Route, distance: number): RoutePosition {
+  const along = Math.max(0, Math.min(route.totalDistance, Number.isFinite(distance) ? distance : 0));
+  const finish = (p: Coordinate & { elevation: number | null }): RoutePosition => ({ ...p, distance: along, remainingDistance: route.totalDistance - along, offsetMeters: 0 });
+  if (along === route.totalDistance) return finish(route.points[route.points.length - 1]);
+  for (const segment of route.segments) {
+    for (let i = 0; i < segment.points.length; i++) {
+      const b = segment.points[i];
+      if (b.distance < along) continue;
+      if (!i || b.distance === along) return finish(b);
+      const a = segment.points[i - 1];
+      const t = (along - a.distance) / (b.distance - a.distance);
+      // Spherical interpolation follows the same great-circle edges as Turf snapping.
+      const rad = Math.PI / 180;
+      const vector = (p: Coordinate) => [Math.cos(p.lat * rad) * Math.cos(p.lon * rad), Math.cos(p.lat * rad) * Math.sin(p.lon * rad), Math.sin(p.lat * rad)];
+      const u = vector(a), v = vector(b);
+      const angle = Math.acos(Math.max(-1, Math.min(1, u.reduce((sum, n, j) => sum + n * v[j], 0))));
+      const sine = Math.sin(angle);
+      const wa = Math.abs(sine) < 1e-12 ? 1 - t : Math.sin((1 - t) * angle) / sine;
+      const wb = Math.abs(sine) < 1e-12 ? t : Math.sin(t * angle) / sine;
+      const [x, y, z] = u.map((n, j) => wa * n + wb * v[j]);
+      return finish({ lon: Math.atan2(y, x) / rad, lat: Math.atan2(z, Math.hypot(x, y)) / rad, elevation: a.elevation === null || b.elevation === null ? null : a.elevation + t * (b.elevation - a.elevation) });
+    }
+  }
+  return finish(route.points[0]);
+}

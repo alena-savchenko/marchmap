@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Camera, GeoJSONSource, Layer, Map, type LngLatBounds } from '@maplibre/maplibre-react-native';
+import { Camera, GeoJSONSource, Layer, Map, type CameraRef, type LngLatBounds } from '@maplibre/maplibre-react-native';
+import { MAP_STYLE } from '../services/mapPolicy';
 import type { FeatureCollection, LineString, Point } from 'geojson';
 import type { Coordinate, GPSPosition, Route, RoutePosition } from '../models/route';
 function Dot({ id, coordinate, color, radius = 7, stroke = '#ffffff' }: { id: string; coordinate: Coordinate; color: string; radius?: number; stroke?: string }) {
@@ -8,7 +9,9 @@ function Dot({ id, coordinate, color, radius = 7, stroke = '#ffffff' }: { id: st
     <Layer id={`${id}-dot`} type="circle" paint={{ 'circle-radius': radius, 'circle-color': color, 'circle-stroke-color': stroke, 'circle-stroke-width': 2 }} />
   </GeoJSONSource>;
 }
-export function RouteMap({ route, gps, current, selected, onSelect }: { route: Route; gps: GPSPosition | null; current: RoutePosition | null; selected: RoutePosition | null; onSelect: (p: Coordinate) => void }) {
+export function RouteMap({ route, gps, current, selected, focus, onSelect }: { route: Route; gps: GPSPosition | null; current: RoutePosition | null; selected: RoutePosition | null; focus: RoutePosition | null; onSelect: (p: Coordinate) => void }) {
+  const camera = useRef<CameraRef>(null);
+  useEffect(() => { if (focus) camera.current?.jumpTo({ center: [focus.lon, focus.lat] }); }, [focus]);
   const [mapFailed, setMapFailed] = useState(false);
   const geometry = useMemo<FeatureCollection<LineString | Point>>(() => ({
     type: 'FeatureCollection',
@@ -25,8 +28,8 @@ export function RouteMap({ route, gps, current, selected, onSelect }: { route: R
     return [west - 0.001, south - 0.001, east + 0.001, north + 0.001];
   }, [route, gps]);
   return <View style={styles.container}>
-    <Map style={styles.map} mapStyle="https://tiles.openfreemap.org/styles/liberty" onDidFailLoadingMap={() => setMapFailed(true)} onPress={(event) => onSelect({ lon: event.nativeEvent.lngLat[0], lat: event.nativeEvent.lngLat[1] })}>
-      <Camera key={gps?.timestamp ?? 'route'} initialViewState={{ bounds, padding: { top: 32, bottom: 32, left: 32, right: 32 } }} />
+    <Map style={styles.map} mapStyle={MAP_STYLE} onDidFinishLoadingMap={() => setMapFailed(false)} onDidFailLoadingMap={() => setMapFailed(true)} onPress={(event) => onSelect({ lon: event.nativeEvent.lngLat[0], lat: event.nativeEvent.lngLat[1] })}>
+      <Camera ref={camera} key={gps?.timestamp ?? 'route'} initialViewState={{ bounds, padding: { top: 32, bottom: 32, left: 32, right: 32 } }} />
       <GeoJSONSource id="route" data={geometry}>
         <Layer id="route-line" type="line" filter={['==', ['geometry-type'], 'LineString']} paint={{ 'line-color': '#256d60', 'line-width': 5 }} layout={{ 'line-cap': 'round', 'line-join': 'round' }} />
         <Layer id="route-singletons" type="circle" filter={['==', ['geometry-type'], 'Point']} paint={{ 'circle-color': '#256d60', 'circle-radius': 4 }} />
@@ -37,7 +40,7 @@ export function RouteMap({ route, gps, current, selected, onSelect }: { route: R
       {current && <Dot id="current" coordinate={current} color="transparent" stroke="#087e9c" radius={13} />}
       {selected && <Dot id="selected" coordinate={selected} color="#ab4a10" radius={8} />}
     </Map>
-    {mapFailed && <Text style={styles.notice}>Подложка не загрузилась. Проверьте интернет.</Text>}
+    {mapFailed && <Text style={styles.notice}>Подложка недоступна. Статус загрузки — в настройках.</Text>}
   </View>;
 }
-const styles = StyleSheet.create({ container: { height: 320, overflow: 'hidden', borderRadius: 12 }, map: { flex: 1 }, notice: { position: 'absolute', top: 8, left: 8, right: 8, padding: 8, backgroundColor: '#fff' } });
+const styles = StyleSheet.create({ container: { flex: 1, overflow: 'hidden', backgroundColor: '#e8efe7' }, map: { flex: 1 }, notice: { position: 'absolute', top: 8, left: 8, right: 64, padding: 8, backgroundColor: '#fff', fontSize: 11 } });

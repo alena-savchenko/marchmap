@@ -1,6 +1,6 @@
 {
   "name": "marchmap",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "main": "index.ts",
   "dependencies": {
     "@maplibre/maplibre-react-native": "^11.4.0",
