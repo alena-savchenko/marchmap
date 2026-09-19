@@ -1,16 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OfflineController } from './offline';
 import { buildRoute } from './route';
-const mocks = vi.hoisted(() => ({ packs: [] as any[], connected: vi.fn(), progress: null as any, error: null as any, create: vi.fn(), remove: vi.fn(), listen: vi.fn() }));
+const mocks = vi.hoisted(() => ({ packs: [] as any[], connected: vi.fn(), progress: null as any, error: null as any, create: vi.fn(), remove: vi.fn(), listen: vi.fn(), deletePack: vi.fn(), clear: vi.fn() }));
 vi.mock('@maplibre/maplibre-react-native', () => ({
   NetworkManager: { setConnected: mocks.connected },
-  OfflineManager: { getPacks: async () => mocks.packs, createPack: mocks.create, removeListener: mocks.remove, addListener: mocks.listen },
+  OfflineManager: { getPacks: async () => mocks.packs, createPack: mocks.create, removeListener: mocks.remove, addListener: mocks.listen, deletePack: mocks.deletePack, clearAmbientCache: mocks.clear },
 }));
 const route = buildRoute([[{ lat: 50, lon: 10, elevation: 100 }, { lat: 50.01, lon: 10.01, elevation: 200 }]]);
 const status = (complete = false, bytes = 0) => ({ state: complete ? 'complete' : 'active', completedResourceSize: bytes, percentage: complete ? 100 : 20 });
 function pack() { return { id: '1', metadata: {}, status: vi.fn(async () => status()), pause: vi.fn(async () => {}), resume: vi.fn(async () => {}) }; }
 beforeEach(() => {
   vi.clearAllMocks(); mocks.packs = [];
+  mocks.deletePack.mockImplementation(async (id) => { mocks.packs = mocks.packs.filter((p) => p.id !== id); });
+  mocks.clear.mockResolvedValue(undefined);
   mocks.create.mockImplementation(async (options, progress, error) => { const p = pack(); p.metadata = options.metadata; mocks.packs.push(p); mocks.progress = progress; mocks.error = error; return p; });
 });
 describe('offline controller', () => {
@@ -57,4 +59,23 @@ describe('offline controller', () => {
       await controller.dispose();
     } finally { vi.useRealTimers(); }
   });
+  it('deletes all packs and ambient cache without automatically downloading them again', async () => {
+    const report = vi.fn(); const controller = new OfflineController(report);
+    await controller.configure('offline', route);
+    const oldProgress = mocks.progress; const oldPack = mocks.packs[0];
+    await controller.clearCache('offline');
+    expect(oldPack.pause).toHaveBeenCalled(); expect(mocks.deletePack).toHaveBeenCalledWith(oldPack.id);
+    expect(mocks.clear).toHaveBeenCalledOnce(); expect(mocks.connected).toHaveBeenLastCalledWith(false);
+    const count = report.mock.calls.length; oldProgress(oldPack, status(true, 999)); expect(report).toHaveBeenCalledTimes(count);
+    await controller.configure('offline', route, false); expect(mocks.create).toHaveBeenCalledOnce();
+    expect(report.mock.lastCall?.[0].state).toBe('empty'); await controller.dispose();
+  });
+  it('propagates cache deletion errors and allows a later retry', async () => {
+    const controller = new OfflineController(vi.fn());
+    mocks.clear.mockRejectedValueOnce(new Error('cache locked'));
+    await expect(controller.clearCache('hybrid')).rejects.toThrow('cache locked');
+    expect(mocks.connected).toHaveBeenLastCalledWith(true);
+    await controller.clearCache('offline'); expect(mocks.clear).toHaveBeenCalledTimes(2); await controller.dispose();
+  });
+
 });

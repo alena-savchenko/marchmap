@@ -49,3 +49,8 @@ emulator*.log
 .codex-remote-attachments/
 .claude/
 .codex/
+
+# Local Expo module build outputs
+modules/**/build/
+modules/**/.gradle/
+modules/**/.cxx/

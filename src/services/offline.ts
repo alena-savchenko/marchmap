@@ -10,7 +10,7 @@ export class OfflineController {
   private timer: ReturnType<typeof setTimeout> | undefined;
   constructor(private report: (status: Preparation) => void) {}
 
-  configure(mode: MapMode, route: Route | null) {
+  configure(mode: MapMode, route: Route | null, prepare = true) {
     const revision = ++this.revision;
     clearTimeout(this.timer);
     this.queue = this.queue.then(async () => {
@@ -52,7 +52,7 @@ export class OfflineController {
         const status = await this.pack?.status();
         if (!active()) return;
         if (status?.state === 'complete') { progress(this.pack!, status); return; }
-        if (mode === 'online') {
+        if (mode === 'online' || !prepare) {
           if (status) this.report({ state: status.completedResourceSize ? 'partial' : 'empty', bytes: status.completedResourceSize, percentage: status.percentage });
           return;
         }
@@ -72,6 +72,24 @@ export class OfflineController {
       if (revision === this.revision) { NetworkManager.setConnected(mode !== 'offline'); this.report({ ...emptyPreparation, state: 'error', message: String(error) }); }
     });
     return this.queue;
+  }
+  clearCache(mode: MapMode) {
+    ++this.revision;
+    clearTimeout(this.timer);
+    const operation = this.queue.then(async () => {
+      NetworkManager.setConnected(false);
+      const packs = await OfflineManager.getPacks();
+      this.pack = null;
+      for (const pack of packs) {
+        OfflineManager.removeListener(pack.id);
+        await pack.pause();
+        await OfflineManager.deletePack(pack.id);
+      }
+      await OfflineManager.clearAmbientCache();
+      this.report({ ...emptyPreparation });
+    }).finally(() => NetworkManager.setConnected(mode !== 'offline'));
+    this.queue = operation.catch(() => {});
+    return operation;
   }
   dispose() { return this.configure('offline', null); }
 }
