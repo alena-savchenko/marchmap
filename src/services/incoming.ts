@@ -1,2 +1,3 @@
 import { requireNativeModule } from 'expo';
-export const incomingFiles = requireNativeModule<{ takeFile(): Promise<{ uri: string; name: string } | null> }>('MarchMapIncoming');
+import type { IncomingFile } from './incomingFile';
+export const incomingFiles = requireNativeModule<{ takeFile(labels: { title: string; cancel: string }): Promise<IncomingFile | null> }>('MarchMapIncoming');

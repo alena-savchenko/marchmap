@@ -130,5 +130,6 @@
 "Применить":["Apply","Übernehmen"],
 "До вершины":["To summit","Bis zum Gipfel"],
 "{distance} км → · +{gain} м ↑":["{distance} km → · +{gain} m ↑","{distance} km → · +{gain} m ↑"],
-"Проверьте параметры чувствительности подъёмов.":["Check the climb sensitivity values.","Prüfe die Werte für die Anstiegsempfindlichkeit."]
+"Проверьте параметры чувствительности подъёмов.":["Check the climb sensitivity values.","Prüfe die Werte für die Anstiegsempfindlichkeit."],
+"Нажмите «Скачать», чтобы импортировать GPX":["Tap Download to import the GPX","Zum GPX-Import auf Herunterladen tippen"]
 }

@@ -17,6 +17,7 @@ import { validateGPXFile } from '../services/gpx';
 import { createRouteLibrary } from '../services/routeStorage';
 import type { SavedRoute } from '../services/routeLibrary';
 import { incomingFiles } from '../services/incoming';
+import { incomingFilename } from '../services/incomingFile';
 import { RouteLibraryModal } from '../components/RouteLibraryModal';
 import { currentRoutePosition, positionAtDistance, ROUTE_THRESHOLD_METERS, snapToRoute } from '../services/route';
 import { getCurrentLocation } from '../services/location';
@@ -116,12 +117,12 @@ export function RouteScreen() {
         locked.current = true;
         let file: File | null = null;
         try {
-            const incoming = await incomingFiles.takeFile();
+            const incoming = await incomingFiles.takeFile({ title: t('Нажмите «Скачать», чтобы импортировать GPX'), cancel: t('Отмена') });
             if (!incoming)
                 return;
             setBusy('file');
             file = new File(incoming.uri);
-            const next = store.import(await file.text(), incoming.name, file.size);
+            const next = store.import(await file.text(), incomingFilename(incoming), file.size);
             activate(next);
             setLibraryVisible(false);
             setSettings(false);

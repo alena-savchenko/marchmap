@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.marchmap.intentfixture">
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="35" />
+  <application android:label="MarchMap import test">
+    <activity android:name=".Sender" android:exported="true" android:theme="@android:style/Theme.NoDisplay" />
+    <provider android:name=".Provider" android:authorities="com.marchmap.intentfixture" android:exported="false" android:grantUriPermissions="true" />
+  </application>
+</manifest>
