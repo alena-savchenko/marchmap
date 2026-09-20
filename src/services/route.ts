@@ -1,3 +1,5 @@
+import { applyClimbSettings, detectClimbs, preprocessElevationProfile } from './climbs';
+import { DEFAULT_CLIMB_SETTINGS } from '../config/climbs';
 import { distance } from '@turf/distance';
 import { lineString, point } from '@turf/helpers';
 import { nearestPointOnLine } from '@turf/nearest-point-on-line';
@@ -29,7 +31,8 @@ export function buildRoute(input: InputPoint[][], name = 'Маршрут'): Rout
       maxElevation = maxElevation === null ? p.elevation : Math.max(maxElevation, p.elevation);
     }
   }
-  return { name, points, segments, totalDistance: cumulative, minElevation, maxElevation };
+  const climbCandidates = detectClimbs(preprocessElevationProfile({ segments }));
+  return applyClimbSettings({ name, points, segments, totalDistance: cumulative, minElevation, maxElevation, climbCandidates, climbs: [] }, DEFAULT_CLIMB_SETTINGS);
 }
 
 export function snapToRoute(route: Route, coordinate: Coordinate): RoutePosition {

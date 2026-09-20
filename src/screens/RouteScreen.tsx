@@ -1,3 +1,8 @@
+import { ClimbCard } from '../components/ClimbCard';
+import { ClimbSettingsSection } from '../components/ClimbSettingsSection';
+import { applyClimbSettings, getCurrentClimbStatus } from '../services/climbs';
+import { loadClimbSettings, saveClimbSettings } from '../services/climbSettings';
+import type { ClimbSettings } from '../config/climbs';
 import { SelectField } from '../components/SelectField';
 import { useTheme } from '../theme/theme';
 import type { Colors } from '../theme/core';
@@ -27,6 +32,7 @@ export function RouteScreen() {
     const { t, n, errorText, preference, setPreference } = useLanguage();
     const { colors: c, preference: themePreference, setPreference: setTheme } = useTheme();
     const styles = makeStyles(c);
+    const [climbSettings, setClimbSettings] = useState(loadClimbSettings);
     const [route, setRoute] = useState<Route | null>(null);
     const [routeVersion, setRouteVersion] = useState(0);
     const [selected, setSelected] = useState<RoutePosition | null>(null);
@@ -42,10 +48,20 @@ export function RouteScreen() {
     const [mode, setMode] = useState(loadMapMode);
     const [preparation, setPreparation] = useState(emptyPreparation);
     const controller = useMemo(() => new OfflineController(setPreparation), []);
-    useEffect(() => { void controller.configure(mode, route, !library.mapsCleared); }, [controller, mode, route, library.mapsCleared]);
+    // Sensitivity only changes cached climbs, not the map geometry/offline region.
+    const configureMap = useEffectEvent(() => { void controller.configure(mode, route, !library.mapsCleared); });
+    useEffect(() => { configureMap(); }, [controller, mode, route?.points, library.mapsCleared]);
     useEffect(() => () => { void controller.dispose(); }, [controller]);
     const locked = useRef(false);
     const current = useMemo(() => route && gps ? currentRoutePosition(route, gps) : null, [route, gps]);
+    const climbStatus = useMemo(() => route ? getCurrentClimbStatus(route, current?.distance ?? null, climbSettings) : null, [route, current, climbSettings]);
+    function changeClimbSettings(next: ClimbSettings) {
+        try {
+            saveClimbSettings(next);
+            setClimbSettings(next);
+            setRoute(previous => previous ? applyClimbSettings(previous, next) : null);
+        } catch (error) { Alert.alert(t("Настройки не сохранены"), errorText(error)); }
+    }
     const selectDistance = useCallback((distance: number) => {
         if (route) {
             const point = positionAtDistance(route, distance);
@@ -70,7 +86,7 @@ export function RouteScreen() {
         }
     }
     function activate(next: Route | null) {
-        setRoute(next);
+        setRoute(next ? applyClimbSettings(next, climbSettings) : null);
         setSelected(null);
         setFocus(null);
         setRouteVersion((version) => version + 1);
@@ -80,7 +96,7 @@ export function RouteScreen() {
             try {
                 const id = store.snapshot().activeId;
                 if (id)
-                    setRoute(store.open(id));
+                    setRoute(applyClimbSettings(store.open(id), climbSettings));
                 setLibrary(store.snapshot());
             }
             catch (error) {
@@ -226,6 +242,7 @@ export function RouteScreen() {
         <Pressable accessibilityRole="button" onPress={() => setSettings(true)} style={styles.status}><View style={[styles.statusDot, { backgroundColor: preparation.state === 'ready' ? '#23906a' : preparation.state === 'error' || preparation.state === 'partial' ? '#df882c' : '#94aaa0' }]}/><Text numberOfLines={1} style={styles.hint}>{mode === 'online' ? t("Карта онлайн") : statusText}</Text></Pressable>
         {displayed && <RouteStats title={selected ? t("● Выбранная точка") : current ? t("● Вы на маршруте") : t("Старт маршрута")} color={selected ? c.orange : current ? c.blue : c.accent} position={displayed}/>}
         <View style={styles.gpsRow}><Text numberOfLines={1} style={[styles.hint, styles.spacer]}>{gps ? current ? t("GPS · {v0} км · {v1} · ±{v2} м", { v0: n(current.distance), v1: current.elevation === null ? '—' : Math.round(current.elevation) + t(" м"), v2: gps.accuracy === null ? '—' : Math.round(gps.accuracy) }) : t("GPS: дальше {v0} м от маршрута", { v0: ROUTE_THRESHOLD_METERS }) : t("Нажмите ⊙ для определения положения")}</Text>{selected && <Pressable accessibilityRole="button" onPress={() => { setSelected(null); setFocus(null); }} hitSlop={8}><Text style={styles.reset}>{t("Сбросить")}</Text></Pressable>}</View>
+        <ClimbCard status={climbStatus}/>
         <ElevationProfile route={route} current={current} selected={selected} onSelect={selectDistance}/>
         <Text style={styles.legend}>{t("● Синий — GPS   ·   ● Оранжевый — выбор на карте / графике")}</Text>
       </View>
@@ -234,11 +251,12 @@ export function RouteScreen() {
     <Modal visible={settings} animationType="slide" onRequestClose={() => setSettings(false)}>
       <SafeAreaView style={styles.safe}>
         <View style={styles.toolbar}><Text style={styles.settingsTitle}>{t("Карта")}</Text><View style={styles.spacer}/><Pressable accessibilityRole="button" accessibilityLabel={t("Закрыть настройки")} onPress={() => setSettings(false)} style={styles.iconButton}><Icon name="close"/></Pressable></View>
-        <ScrollView contentContainerStyle={styles.settingsContent}>
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.settingsContent}>
           <Text style={styles.sectionTitle}>{t("Язык")}</Text>
           <SelectField label={t("Язык")} value={preference} options={[{ value: 'system', label: t("Как на устройстве") }, { value: 'ru', label: 'Русский' }, { value: 'en', label: 'English' }, { value: 'de', label: 'Deutsch' }]} onChange={value => { try { setPreference(value); } catch { Alert.alert(t("Язык не сохранён"), t("Не удалось сохранить язык. Проверьте свободное место.")); } }} />
           <Text style={styles.sectionTitle}>{t("Тема")}</Text>
           <SelectField label={t("Тема")} value={themePreference} options={[{ value: 'system', label: t("Системная") }, { value: 'light', label: t("Светлая") }, { value: 'dark', label: t("Тёмная") }]} onChange={value => { try { setTheme(value); } catch { Alert.alert(t("Настройки не сохранены"), t("Не удалось сохранить тему. Проверьте свободное место.")); } }} />
+          <ClimbSettingsSection settings={climbSettings} onChange={changeClimbSettings}/>
           <Text style={styles.sectionTitle}>{t("Режим карты")}</Text>
           {mapModes.map((item) => <Pressable key={item.value} accessibilityRole="radio" accessibilityState={{ checked: mode === item.value }} disabled={!!busy} onPress={() => changeMode(item.value)} style={styles.option}><View style={[styles.radio, mode === item.value && styles.radioSelected]}>{mode === item.value && <View style={styles.radioDot}/>}</View><View style={styles.spacer}><Text style={styles.optionTitle}>{t(item.title)}</Text><Text style={styles.descriptionSmall}>{t(item.description)}</Text></View></Pressable>)}
           <View style={styles.offlineCard}>
