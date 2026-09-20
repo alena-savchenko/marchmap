@@ -1,3 +1,5 @@
+import { useTheme } from '../theme/theme';
+import type { Colors } from '../theme/core';
 import { useLanguage } from '../i18n/language';
 import { StyleSheet, Text, View } from 'react-native';
 import type { RoutePosition } from '../models/route';
@@ -7,6 +9,8 @@ export function RouteStats({ title, position, color }: {
     color: string;
 }) {
     const { t, n } = useLanguage();
+    const { colors: c } = useTheme();
+    const styles = makeStyles(c);
     return <View style={styles.card}>
     <Text style={[styles.title, { color }]}>{title}</Text>
     <View style={styles.row}>
@@ -14,4 +18,4 @@ export function RouteStats({ title, position, color }: {
     </View>
   </View>;
 }
-const styles = StyleSheet.create({ card: { gap: 6 }, title: { fontSize: 11, fontWeight: '600' }, row: { flexDirection: 'row' }, stat: { flex: 1 }, value: { fontSize: 21, fontWeight: '700', color: '#172f2a' }, label: { fontSize: 12, color: '#637770' } });
+const makeStyles = (c: Colors) => StyleSheet.create({ card: { gap: 6 }, title: { fontSize: 11, fontWeight: '600' }, row: { flexDirection: 'row' }, stat: { flex: 1 }, value: { fontSize: 21, fontWeight: '700', color: c.text }, label: { fontSize: 12, color: c.muted } });

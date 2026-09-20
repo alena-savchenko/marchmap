@@ -103,5 +103,11 @@
 "Язык не сохранён":["Language not saved","Sprache nicht gespeichert"],
 "Не удалось сохранить язык. Проверьте свободное место.":["Could not save the language. Check available storage.","Die Sprache konnte nicht gespeichert werden. Prüfe den freien Speicher."],
 "Произошла ошибка. Проверьте разрешения, подключение и свободное место.":["An error occurred. Check permissions, your connection and available storage.","Ein Fehler ist aufgetreten. Prüfe Berechtigungen, Verbindung und freien Speicher."],
-"Маршрут":["Route","Route"]
+"Маршрут":["Route","Route"],
+"Тема":["Theme","Design"],
+"Системная":["System","System"],
+"Светлая":["Light","Hell"],
+"Тёмная":["Dark","Dunkel"],
+"Не удалось сохранить тему. Проверьте свободное место.":["Could not save the theme. Check available storage.","Das Design konnte nicht gespeichert werden. Prüfe den freien Speicher."],
+"Север сверху":["North up","Norden oben"]
 }

@@ -1,8 +1,13 @@
+import { useTheme } from '../theme/theme';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { Image } from 'react-native';
-export function Icon({ name, size = 24, color = '#155847' }: { name: 'mountain' | 'plus' | 'location' | 'settings' | 'close' | 'folder' | 'trash'; size?: number; color?: string }) {
+export function Icon({ name, size = 24, color: suppliedColor }: { name: 'mountain' | 'plus' | 'location' | 'settings' | 'close' | 'folder' | 'trash' | 'compass' | 'chevron'; size?: number; color?: string }) {
+  const { colors } = useTheme();
+  const color = suppliedColor ?? colors.accent;
   if (name === 'mountain') return <Image source={require('../../assets/brand-symbol.png')} style={{ width: size, height: size }} resizeMode="contain" />;
   return <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    {name === 'chevron' && <Path d="m6 9 6 6 6-6" />}
+    {name === 'compass' && <><Path d="m12 3 5 17-5-4-5 4Z" /><Path d="M12 3v13" /></>}
     {name === 'folder' && <Path d="M3 6h6l2 3h10v11H3ZM3 6V4h7l2 3h8v2" />}
     {name === 'trash' && <Path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7" />}
     {name === 'plus' && <Path d="M12 5v14M5 12h14" />}
