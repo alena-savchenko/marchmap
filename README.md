@@ -1,71 +1,71 @@
 <p align="center">
-  <img src="assets/brand-symbol.png" alt="Логотип MarchMap" width="96" />
+  <img src="assets/brand-symbol.png" alt="MarchMap logo" width="96" />
 </p>
 
 # MarchMap
 
-**Маршрут, карта и профиль высоты — на одном экране.**
+**Your route, map, and elevation profile on one screen.**
 
-MarchMap — Android-приложение для просмотра GPX-маршрутов и подготовки карт к походам без интернета. Изучайте точки на карте и профиле, определяйте своё положение относительно маршрута и смотрите, сколько осталось до вершины значимого подъёма.
+MarchMap is an Android app for exploring GPX routes and preparing offline maps for hikes. Browse points on the map and elevation profile, locate yourself along the route, and see how much distance and elevation remain before the summit of a significant climb.
 
-Интерфейс доступен на **русском, английском и немецком**, со светлой, тёмной и системной темой. GPX обрабатывается на устройстве; аккаунт и сервер MarchMap не нужны.
+The interface supports **English, German, and Russian**, with light, dark, and system themes. GPX files are processed on your device. No account or MarchMap backend is required.
 
-## Возможности
+## Features
 
-- **Связанные карта и профиль:** касание маршрута или перемещение по высотам выбирает одну и ту же точку и обновляет показатели.
-- **Локальная библиотека:** импорт, переключение и удаление маршрутов. Последний маршрут восстанавливается после перезапуска.
-- **Офлайн-карты:** предварительная загрузка области маршрута, статусы, прогресс, размер и повтор после ошибки.
-- **Положение на маршруте:** расстояние от старта и до финиша; GPS независим от выбранной для просмотра точки.
-- **«До вершины»:** оставшиеся расстояние и набор высоты на значимом подъёме, с настраиваемой чувствительностью.
-- **Android-импорт:** открытие GPX через «Открыть с помощью» и «Поделиться».
-- **Очистка карт и кэша** без удаления GPX.
-- **Компас:** возврат карты в положение «север сверху».
+- **Connected map and elevation profile:** tap the route or scrub the profile to select a point and update its details.
+- **Local route library:** import, switch between, and delete routes. The last active route is restored when the app starts.
+- **Offline maps:** download the route area in advance, with preparation status, progress, size, and retry controls.
+- **Route position:** view distance from the start and to the finish. Your GPS position stays independent of the point selected for browsing.
+- **Summit progress:** see remaining distance and elevation gain on significant climbs, with adjustable detection sensitivity.
+- **Android file integration:** import GPX files through Open with and Share.
+- **Map and cache cleanup** without deleting saved GPX routes.
+- **Compass:** reset the map to north-up.
 
-## Как пользоваться
+## Getting started
 
-1. Нажмите **+** справа вверху и выберите GPX. Для знакомства подойдёт [пример маршрута в Берлине](samples/berlin.gpx).
-2. В офлайн- или гибридном режиме дождитесь статуса **«Готова»**. Во время подготовки оставляйте приложение открытым.
-3. Нажмите значок местоположения для получения GPS-позиции. Разрешение запрашивается при использовании функции.
-4. Касайтесь карты или перемещайтесь по профилю. Оранжевая точка — выбранная, синяя — GPS-позиция.
-5. Открывайте библиотеку через значок папки. Режим карты, язык, тема и чувствительность подъёмов находятся в настройках.
+1. Tap **+** in the top-right corner and choose a GPX file. Try the [sample Berlin route](samples/berlin.gpx).
+2. In offline or hybrid mode, wait until map preparation is **Ready**. Keep the app open while downloading.
+3. Tap the location icon to get your GPS position. Location permission is requested when you use this feature.
+4. Tap the map or scrub the elevation profile. The orange point is your selection; the blue point is your GPS position.
+5. Open your route library using the folder icon. Map mode, language, theme, and climb sensitivity are available in settings.
 
-GPS обновляется **по нажатию кнопки**. Постоянного или фонового отслеживания, записи трека и пошаговой навигации пока нет.
+GPS updates **when you tap the location button**. Continuous or background tracking, track recording, and turn-by-turn navigation are not currently supported.
 
-### Режимы карты
+### Map modes
 
-| Режим | Подготовка при импорте | Просмотр |
+| Mode | Preparation on import | While browsing |
 | --- | --- | --- |
-| Только офлайн | Скачивается область маршрута | После завершения подготовки или ошибки сеть для подложки отключается. Вне сохранённой области карта может быть пустой. |
-| **Офлайн + онлайн-подгрузка** — по умолчанию | Скачивается область маршрута | Сохранённая область доступна без сети; вне неё данные подгружаются при наличии интернета. |
-| Только онлайн | Предварительной загрузки нет | Данные запрашиваются при просмотре. Существующий кэш автоматически не удаляется. |
+| Offline only | Downloads the route area | Basemap network access is disabled after preparation finishes or fails. Areas outside the downloaded region may be blank. |
+| **Offline + online fallback** — default | Downloads the route area | The saved region remains available offline; other areas load when an internet connection is available. |
+| Online only | No advance download | Map data loads as you browse. Existing cached data is not automatically deleted. |
 
-Выбор сохраняется между запусками и не удаляет маршрут. Подготовка охватывает прямоугольную область маршрута с запасом 0,01° и масштабы 0–14. Показанный размер относится к ресурсам пакета, а не ко всей базе карт.
+Your choice persists between launches and does not remove the route. Downloads cover the route's bounding box with a 0.01° margin at zoom levels 0–14. The displayed size describes the package resources, not the entire map database.
 
-После команды **«Удалить все скачанные карты и кэш»** GPX остаются в библиотеке. Для новой подготовки используйте повтор загрузки или импорт нового маршрута. В гибридном и онлайн-режимах просмотр снова наполняет обычный кэш.
+Clearing all downloaded maps and cache keeps your GPX library intact. To prepare maps again, retry the download or import a new route. Browsing in hybrid or online mode will populate the normal cache again.
 
-### Значимые подъёмы
+### Significant climbs
 
-Подъёмы вычисляются по высотам **исходного GPX**, а не по GPS altitude. Анализ выполняется при построении модели маршрута; обновление GPS и выбор точки не запускают его повторно.
+Climbs are calculated from **the original GPX elevations**, not GPS altitude. Analysis runs when the route model is built; GPS updates and point selection do not repeat it.
 
-Чувствительность: высокая, средняя (по умолчанию), низкая или своя. В ручном режиме базовые уклон и длина задают порог тяжести: более крутой подъём может быть короче, более пологий — длиннее. Например, 6% на 800 м задают порог `0.8 × 6² = 28.8`.
+Choose high, medium (default), low, or custom sensitivity. In custom mode, a reference grade and distance define a difficulty threshold: steeper climbs can be shorter, while gentler climbs need to be longer. For example, 6% over 800 m gives a threshold of `0.8 × 6² = 28.8`.
 
-Карточка появляется для GPS-позиции на текущем подъёме, когда до вершины остаётся больше 100 м пути и 10 м набора. Выбор точки на профиле на неё не влияет. Параметры — в [src/config/climbs.ts](src/config/climbs.ts), реализация — в [src/services/climbs.ts](src/services/climbs.ts).
+The summit card appears when your GPS position is on the current climb and more than 100 m of distance and 10 m of elevation gain remain. Selecting a point on the profile does not affect it. Parameters live in [src/config/climbs.ts](src/config/climbs.ts); the implementation is in [src/services/climbs.ts](src/services/climbs.ts).
 
-## Формат файлов и ограничения
+## Supported files and limitations
 
-- GPX до **25 МиБ**: `trk / trkseg / trkpt`, несколько треков и сегментов, XML namespaces. Маршруты `rte` и отдельные waypoints пока не импортируются.
-- Разрывы сегментов не соединяются линией. Отсутствующие высоты не подменяются GPS-высотой и разделяют анализ подъёмов.
-- Неверный формат или повреждённые данные вызывают ошибку; прежний маршрут сохраняется.
-- Привязка GPS к маршруту действует в пределах 30 м. На самопересечениях без истории движения возможен выбор другого равноудалённого участка.
-- Подготовка офлайн-карт за пределами ±85° и для маршрутов через антимеридиан не поддерживается.
-- **OneDrive — экспериментально:** ссылка открывает страницу внутри приложения; для импорта нужно нажать «Скачать» на странице OneDrive. Сквозной сценарий через Android WebView ещё не подтверждён на физическом телефоне. Обходной путь — скачать GPX и импортировать через **+**.
-- Разработка и проверки ориентированы на Android. Поддержка iOS и веба не заявлена.
+- GPX files up to **25 MiB**, using `trk / trkseg / trkpt`, including multiple tracks, segments, and XML namespaces. GPX routes (`rte`) and standalone waypoints are not currently imported.
+- Gaps between segments are not connected. Missing elevations are not replaced with GPS altitude and split climb analysis into separate sections.
+- Invalid formats or malformed data produce an error and leave the previous route intact.
+- GPS snaps to the route within 30 m. At self-intersections, an equally close section may be selected because movement history is not tracked.
+- Offline map preparation does not support regions beyond ±85° latitude or routes crossing the antimeridian.
+- **OneDrive support is experimental:** a shared link opens a page inside the app; tap Download on the OneDrive page to import the file. The complete Android WebView flow has not yet been confirmed on a physical phone. As a workaround, download the GPX first and import it using **+**.
+- Development and testing target Android. iOS and web support are not currently claimed.
 
-## Разработка
+## Development
 
-Стек: **Expo SDK 57 · React Native 0.86 · React 19 · TypeScript 6 · MapLibre Native · Turf · SVG**.
+Built with **Expo SDK 57 · React Native 0.86 · React 19 · TypeScript 6 · MapLibre Native · Turf · SVG**.
 
-Понадобятся Node.js 22.13+ (проверено на 24.14), npm, JDK 21, Android SDK и эмулятор либо Android-устройство с USB debugging. Установите Android toolchain через Android Studio и укажите `JAVA_HOME` и `ANDROID_HOME` для своего окружения.
+You will need Node.js 22.13+ (tested with 24.14), npm, JDK 21, the Android SDK, and an emulator or Android device with USB debugging enabled. Install the Android toolchain through Android Studio and configure `JAVA_HOME` and `ANDROID_HOME` for your environment.
 
 ```sh
 git clone https://github.com/alena-savchenko/marchmap.git
@@ -74,13 +74,13 @@ npm ci
 npm run android
 ```
 
-Для физического устройства: `npm run android:device`. Отдельный запуск Metro: `npm start`.
+For a physical device, use `npm run android:device`. To start Metro separately, run `npm start`.
 
-**Expo Go не подходит:** приложение использует MapLibre и собственный нативный модуль импорта. Debug-сборка требует Metro; standalone release APK содержит JavaScript bundle и работает без Metro.
+**Expo Go is not supported:** the app uses MapLibre and a custom native import module. Debug builds require Metro; standalone release APKs include the JavaScript bundle and run without Metro.
 
-### Standalone APK для тестирования
+### Build a standalone APK for testing
 
-Пример сборки в Windows PowerShell после установки зависимостей:
+Example for Windows PowerShell after installing dependencies:
 
 ```powershell
 $env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
@@ -92,17 +92,17 @@ Set-Location android
 .\gradlew.bat :app:assembleRelease '-PreactNativeArchitectures=arm64-v8a,x86_64' '-Dorg.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=1536m -Dfile.encoding=UTF-8' --console=plain --max-workers=2
 ```
 
-Результат: `android/app/build/outputs/apk/release/app-release.apk`. Поддерживаются ARM64-телефоны и x86_64-эмуляторы. APK и каталоги сборки не хранятся в Git.
+Output: `android/app/build/outputs/apk/release/app-release.apk`. This builds for ARM64 phones and x86_64 emulators. APKs and build directories are not committed to Git.
 
-Текущая версия — **1.3.1**, Android package — `com.marchmap.standalone`. Тестовые release-сборки используют стандартный ключ Expo-шаблона. Для Google Play нужно настроить собственную подпись и production-сборку; публикация в магазине ещё не выполнена.
+The current version is **1.3.1**, with Android package `com.marchmap.standalone`. Test release builds use the default Expo template signing key. Google Play publication requires a dedicated signing setup and production build; the app has not yet been published to the store.
 
-В [eas.json](eas.json) есть профиль `preview` для standalone APK (`developmentClient: false`). Для него потребуется настроить свой EAS-проект и credentials.
+[eas.json](eas.json) also includes a `preview` profile for standalone APKs (`developmentClient: false`). Configure your own EAS project and credentials before using it.
 
-Каталоги `android/` и `ios/` генерируются и исключены из Git. Постоянные нативные изменения вносите в config plugins или локальные модули, чтобы они сохранялись после prebuild.
+The `android/` and `ios/` directories are generated and excluded from Git. Put lasting native changes in config plugins or local modules so they survive prebuild.
 
-### Проверки
+### Validation
 
-Запускайте из корня проекта:
+Run from the project root:
 
 ```sh
 npm run typecheck
@@ -111,34 +111,34 @@ npm test
 node scripts/climb-report.cjs
 ```
 
-Тесты покрывают GPX-валидацию, геометрию и разрывы маршрутов, GPS snap, подъёмы, библиотеку, настройки, переводы и управление офлайн-картами. Отчёт подъёмов использует sample GPX и синтетический маршрут из 10 001 точки; время измеряется в Node.js, а не на телефоне.
+Tests cover GPX validation, route geometry and segment gaps, GPS snapping, climbs, the route library, settings, translations, and offline map management. The climb report uses sample GPX files and a synthetic route with 10,001 points; timings are measured in Node.js, not on a phone.
 
-Для версии 1.3.1 прошли typecheck, lint, **132 unit-теста** и Android release build. Android VIEW/SEND, ClipData, некорректные файлы и отмена облачного импорта проверялись на эмуляторе API 35. Ограничение проверки OneDrive описано выше.
+Version 1.3.1 passed typecheck, lint, **132 unit tests**, and the Android release build. Android VIEW/SEND, ClipData, invalid files, and cloud import cancellation were checked on an API 35 emulator. The OneDrive verification limitation is described above.
 
-Для проверки передачи файлов есть отдельный [Android test provider](tests/android-incoming/README.md). Проверяйте standalone APK без Metro, восстановление маршрута после перезапуска и карту с отключёнными Wi-Fi и мобильными данными.
+A separate [Android test provider](tests/android-incoming/README.md) is available for file handoff checks. Test standalone APKs without Metro, verify route restoration after restarting, and check downloaded maps with Wi-Fi and mobile data disabled.
 
-### Структура проекта
+### Project structure
 
-| Путь | Назначение |
+| Path | Purpose |
 | --- | --- |
-| [src/screens](src/screens) | Главный экран и связывание функций |
-| [src/components](src/components) | Карта, профиль, библиотека, настройки и карточки |
-| [src/models/route.ts](src/models/route.ts) | Модель маршрута |
-| [src/services](src/services) | GPX, геометрия, подъёмы, хранение, GPS и офлайн-карты |
-| [src/i18n](src/i18n) | Переводы RU / EN / DE и форматирование |
-| [src/theme](src/theme) | Темы интерфейса и стиль карты |
-| [modules/marchmap-incoming](modules/marchmap-incoming) | Android-импорт файлов и OneDrive WebView |
-| [plugins/withIncomingIntent.js](plugins/withIncomingIntent.js) | Передача новых Android Intent |
-| [samples](samples) | Примеры GPX |
+| [src/screens](src/screens) | Main screen and feature integration |
+| [src/components](src/components) | Map, profile, library, settings, and cards |
+| [src/models/route.ts](src/models/route.ts) | Route model |
+| [src/services](src/services) | GPX, geometry, climbs, storage, GPS, and offline maps |
+| [src/i18n](src/i18n) | English, German, and Russian translations and formatting |
+| [src/theme](src/theme) | Interface themes and map styling |
+| [modules/marchmap-incoming](modules/marchmap-incoming) | Android file import and OneDrive WebView |
+| [plugins/withIncomingIntent.js](plugins/withIncomingIntent.js) | Incoming Android Intent handling |
+| [samples](samples) | Sample GPX files |
 
-Исходный логотип: [assets/logo.png](assets/logo.png). Производные иконки и символы пересоздаются командой `python scripts/prepare_brand.py` при установленном Pillow.
+The original logo is [assets/logo.png](assets/logo.png). Regenerate derived icons and symbols with `python scripts/prepare_brand.py` after installing Pillow.
 
-Подробности реализации и история прежних проверок сохранены в [журнале разработки](docs/development-notes.md). Это архив состояния отдельных версий; текущие возможности и ограничения описаны здесь.
+Implementation details and earlier verification records are preserved in the [development notes archive](docs/development-notes.md), currently in Russian. Those notes describe individual historical versions; this README describes current capabilities and limitations.
 
-## Данные и лицензии
+## Data and licenses
 
-GPX и настройки хранятся в приватном локальном хранилище приложения. GPS-позиция находится только в памяти; фоновой истории перемещений нет. Загрузка карт обращается к поставщику карт, а открытие облачной ссылки — к соответствующему сервису.
+GPX files and settings are stored in the app's private local storage. GPS position is kept in memory only; no background location history is recorded. Map downloads contact the map provider, and opening cloud links contacts the corresponding service.
 
-Карта использует OpenFreeMap Liberty и данные OpenStreetMap / OpenMapTiles. Атрибуция доступна на карте. Лицензии исходных стилей и ресурсов — в [licenses/OpenFreeMap.md](licenses/OpenFreeMap.md) и [licenses/OSM-Liberty.md](licenses/OSM-Liberty.md); тёмная палитра изменена для MarchMap.
+Maps use OpenFreeMap Liberty and OpenStreetMap / OpenMapTiles data. Attribution is available on the map. Original style and resource licenses are preserved in [licenses/OpenFreeMap.md](licenses/OpenFreeMap.md) and [licenses/OSM-Liberty.md](licenses/OSM-Liberty.md). The dark palette has been modified for MarchMap.
 
-В репозитории сохранён [MIT LICENSE исходного Expo-шаблона](LICENSE). У сторонних картографических данных, стилей и зависимостей действуют собственные условия использования.
+The repository retains the [MIT license from the original Expo template](LICENSE). Third-party map data, styles, and dependencies have their own licensing terms.
